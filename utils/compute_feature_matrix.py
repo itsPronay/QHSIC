@@ -89,12 +89,12 @@ class CrossModelCKA:
 
             self._compare_cka(total_batches)
 
-        # self.hsic_matrix = self.hsic_matrix[:, :, 1] / (
-        #     self.hsic_matrix[:, :, 0].sqrt() * self.hsic_matrix[:, :, 2].sqrt()
-        # )
+        self.hsic_matrix = self.hsic_matrix[:, :, 1] / (
+            self.hsic_matrix[:, :, 0].sqrt() * self.hsic_matrix[:, :, 2].sqrt()
+        )
 
-        denom = (self.hsic_matrix[:, :, 0].clamp(min=0).sqrt() * self.hsic_matrix[:, :, 2].clamp(min=0).sqrt() + 1e-8)
-        self.hsic_matrix = self.hsic_matrix[:, :, 1] / denom
+        # denom = (self.hsic_matrix[:, :, 0].clamp(min=0).sqrt() * self.hsic_matrix[:, :, 2].clamp(min=0).sqrt() + 1e-8)
+        # self.hsic_matrix = self.hsic_matrix[:, :, 1] / denom
         # # self.hsic_matrix = self.hsic_matrix[:, :, 1] / (
         # #     self.hsic_matrix[:, :, 0].sqrt() * self.hsic_matrix[:, :, 2].sqrt() + 1e-8
         # # )
@@ -270,10 +270,10 @@ def compare_cka_and_print_result(
 
     # first do cka for models one by one 
     cka_original = compute_cka_similarity(model, matched_layer_names, test_loader, device='cuda' if torch.cuda.is_available() else 'cpu', batch_limit=batch_limit)
-    plot_cka_matrix(cka_original, save_path=f'cka_original_{args.model}_nbits{args.nbits}.png', title=f'CKA for {args.model} original')
+    plot_cka_matrix(cka_original, save_path=f'cka_original_{args.model}_nbits{args.nbits}.png', title=f'{args.model} & dataset:{args.dataset} original')
 
     cka_quantized = compute_cka_similarity(quantized_model, matched_layer_names, test_loader, device='cuda' if torch.cuda.is_available() else 'cpu', batch_limit=batch_limit)
-    plot_cka_matrix(cka_quantized, save_path=f'cka_quantized_{args.model}_nbits{args.nbits}.png', title=f'CKA for {args.model} quantized')
+    plot_cka_matrix(cka_quantized, save_path=f'cka_quantized_{args.model}_nbits{args.nbits}.png', title=f'{args.model} & dataset:{args.dataset} quantized')
 
     #cka both models together
     cka = CrossModelCKA(
@@ -284,7 +284,7 @@ def compare_cka_and_print_result(
         name_a=name_a,
         name_b=name_b
     )
-    cka.compare(test_loader, num_batches_limit=None)
+    cka.compare(test_loader, num_batches_limit=batch_limit)
 
     cka.plot_cka(
         save_path=save_path,

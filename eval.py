@@ -41,6 +41,7 @@ def get_args():
     parser.add_argument("--wandb_mode", default="online", choices=["online", "offline", "disabled"])
     parser.add_argument('--wandb_project', type=str, default='QHSIC_sfinal_studyf', help='wandb project name')
     parser.add_argument('--cka', type=bool, default=False, help='if True, compute CKA between original and quantized model')
+    parser.add_argument('--axis', type=int, default=1)
 
     args = parser.parse_args()
     return args
@@ -161,7 +162,7 @@ def main():
             quantized_model = quantized_model,
             test_loader = test_loader,
             batch_limit = None,
-            save_path = f'cka_comparison_{args.model}_{args.dataset}.png'
+            save_path = f'cka_comparison_{args.model}_{args.dataset}_nbits{args.nbits}.png'
         )
     
     if args.model == 'mvit':

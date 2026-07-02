@@ -142,6 +142,7 @@ def replace_all_linear_with_hqq_safe(
     del_orig=True,
     verbose=True,
     exclude_names=None,
+    axis=1
 ):
     """
     Same as replace_all_linear_with_hqq but:
@@ -181,7 +182,7 @@ def replace_all_linear_with_hqq_safe(
         # else:
         effective_gs = group_size
 
-        quant_config = BaseQuantizeConfig(nbits=nbits, group_size=effective_gs)
+        quant_config = BaseQuantizeConfig(nbits=nbits, group_size=effective_gs, axis=axis)
 
         hqq_layer = HQQLinear(
             child_module,

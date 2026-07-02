@@ -44,6 +44,7 @@ def hqq_quantization(args, model):
         del_orig=args.del_orig,
         verbose=args.verbose,
         exclude_names=exclude_layers,
+        axis=args.axis,
     )
 
     return model

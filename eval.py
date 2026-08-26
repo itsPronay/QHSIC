@@ -17,7 +17,6 @@ from utils.data_prepare import applyPCA
 from utils.train_utils import train, test, valid, output_metric, class_accuracy_percent
 from utils.download_dataset import downloadAndLoadDataset
 from utils.load_model import model_loader
-from utils.compute_feature_matrix import compare_cka_and_print_result
 
 from quantizer.quantize_hqq import hqq_quantization
 from quantizer.quantize_quanto import quanto_quantization
@@ -40,8 +39,6 @@ def get_args():
     # wandb 
     parser.add_argument("--wandb_mode", default="online", choices=["online", "offline", "disabled"])
     parser.add_argument('--wandb_project', type=str, default='QHSIC_sfinal_studyf', help='wandb project name')
-    parser.add_argument('--cka', type=bool, default=False, help='if True, compute CKA between original and quantized model')
-    parser.add_argument('--axis', type=int, default=1)
 
     args = parser.parse_args()
     return args
@@ -93,7 +90,7 @@ def main():
 
     mirror_data = mirror_hsi(height, width, band, data, patch_size=args.patch_size)
 
-    if args.dataset == 'Indian': #hardcoding cause, a class in indian Pines has only 20 samples
+    if args.dataset == 'Indian': # hardcoding cause a class in indian Pines has only 20 samples
         train_num = 10
     else:
         train_num= args.train_num
@@ -137,9 +134,6 @@ def main():
         quantized_model = quanto_quantization(args, model)
     print("Model has been quantized successfully")
 
-    # if args.print_quantization_summary:
-    #     print("\n[INFO]__________________________________ Model after quantization: __________________________________")
-    #     print_quantization_summary(quantized_model)
 
     print("started testing model after quantization")
     test_tar_quantized, test_pre_quantized = test(quantized_model, test_loader)
@@ -148,22 +142,6 @@ def main():
     # get per class accuracy for both original and quantized model
     class_acc = class_accuracy_percent(test_tar, test_pre, num_classes)
     clas_acc_quantized = class_accuracy_percent(test_tar_quantized, test_pre_quantized, num_classes)
-
-    # loading model with new names cause hqq changes model in place 
-    # but we want to compare the original model with quantized model
-    if args.cka == True:
-        ref_model = model_loader(args, num_class=num_classes)
-        ref_model.load_state_dict(torch.load(saved_path))
-        ref_model.eval()
-
-        compare_cka_and_print_result(
-            args = args,
-            model = ref_model,
-            quantized_model = quantized_model,
-            test_loader = test_loader,
-            batch_limit = None,
-            save_path = f'cka_comparison_{args.model}_{args.dataset}_nbits{args.nbits}.png'
-        )
     
     if args.model == 'mvit':
         model_name = 'MViT'

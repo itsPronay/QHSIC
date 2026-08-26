@@ -16,12 +16,6 @@ python train.py --model mvit --dataset UP
 python eval.py --model mvit --dataset UP --quant_method hqq --nbits 8 --group_size 64
 ```
 
-If you want to compare the original and quantized model with CKA, enable the `--cka` flag:
-
-```bash
-python eval.py --model mvit --dataset UP --quant_method hqq --nbits 8 --group_size 64 --cka True
-```
-
 ## Notes
 
 - `train.py` contains the training arguments.

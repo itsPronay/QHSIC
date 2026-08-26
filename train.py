@@ -16,7 +16,6 @@ from utils.data_prepare import train_and_test_data, train_and_test_label
 from utils.data_prepare import applyPCA
 from utils.train_utils import train, valid
 from utils.download_dataset import downloadAndLoadDataset
-from utils.get_model_summary import getParamCount
 from utils.load_model import model_loader
 
 
@@ -121,8 +120,6 @@ def main():
     print("Printing Model:")
     print("*****************************************************************")
     print(model)
-    params = getParamCount(model, printLayers=False)
-    print(f"Total number of trainable params in the model: {params}")
     print("*****************************************************************")
 
     print('started training')
